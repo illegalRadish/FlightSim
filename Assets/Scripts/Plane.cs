@@ -105,6 +105,9 @@ public class Plane : MonoBehaviour {
     GameObject missilePrefab;
     [SerializeField]
     Target target;
+
+    public Target[] targets;
+
     [SerializeField]
     float lockRange;
     [SerializeField]
@@ -614,6 +617,15 @@ public class Plane : MonoBehaviour {
 
         //update weapon state
         UpdateWeapons(dt);
+        float curAngle = Mathf.Abs(Vector3.Angle(transform.forward, target.transform.position-transform.position));
+        //float curDist = Vector3.Distance(target.gameObject.transform.position, transform.position);
+        for (int i = 0; i < targets.Length; i++) 
+        {
+          float angle = Mathf.Abs(Vector3.Angle(transform.forward, targets[i].transform.position-transform.position));
+          if(curAngle > angle && !targets[i].Plane.Dead ){
+            target = targets[i];
+          }
+        }
     }
 
     void OnCollisionEnter(Collision collision) {

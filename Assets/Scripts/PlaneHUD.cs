@@ -41,6 +41,11 @@ public class PlaneHUD : MonoBehaviour {
     [SerializeField]
     Text targetRange;
     [SerializeField]
+    GameObject targetIndicator;
+    public GameObject[] targetIndicators;
+    public Plane plane2;
+
+    [SerializeField]
     Transform missileLock;
     [SerializeField]
     Transform reticle;
@@ -96,6 +101,10 @@ public class PlaneHUD : MonoBehaviour {
         reticleGO = reticle.gameObject;
         targetArrowGO = targetArrow.gameObject;
         missileArrowGO = missileArrow.gameObject;
+        for (int i = 0; i < plane2.targets.Length; i++){
+            targetIndicators[i] = Instantiate(targetIndicator,new Vector3(0,0,0), Quaternion.identity);
+            targetIndicators[i].transform.SetParent(transform);
+        }
     }
 
     public void SetPlane(Plane plane) {
@@ -213,6 +222,21 @@ public class PlaneHUD : MonoBehaviour {
         //update target box, missile lock
         var targetDistance = Vector3.Distance(plane.Rigidbody.position, plane.Target.Position);
         var targetPos = TransformToHUDSpace(plane.Target.Position);
+        for (int i = 0; i < plane2.targets.Length; i++){
+            //targetBoxGO.SetActive(false);
+            if(plane.targets[i] != plane.Target){
+                Vector3 iPos = TransformToHUDSpace(plane.targets[i].Position);
+                if(TransformToHUDSpace(plane.targets[i].Position).z > 0){
+                    targetBoxGO.SetActive(true);
+                    targetIndicators[i].transform.localPosition = new Vector3(iPos.x,iPos.y,0);
+                }else{
+                    targetBoxGO.SetActive(false);
+                }
+            }
+            
+            
+        }
+        
         var missileLockPos = plane.MissileLocked ? targetPos : TransformToHUDSpace(plane.Rigidbody.position + plane.MissileLockDirection * targetDistance);
 
         if (targetPos.z > 0) {
